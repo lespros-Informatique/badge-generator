@@ -2,7 +2,12 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // Check if API is configured
     if (!isAPIConfigured()) {
-        alert('⚠️ IMPORTANT: Configurez votre clé API JSONBin.io dans config.js');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Configuration requise',
+            text: 'Configurez votre clé API Supabase dans config.js',
+            confirmButtonText: 'OK'
+        });
     }
 
     await loadMembers();
@@ -167,10 +172,26 @@ document.getElementById('editForm').addEventListener('submit', async (e) => {
         qrcode: qrCodeData
     };
 
-    await updateMember(id, updatedData);
-    closeEditModal();
-    await loadMembers();
-    alert('Membre mis à jour avec succès !');
+    try {
+        await updateMember(id, updatedData);
+        closeEditModal();
+        await loadMembers();
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Modifié !',
+            text: 'Le membre a été mis à jour avec succès.',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Une erreur est survenue lors de la modification',
+            confirmButtonText: 'OK'
+        });
+    }
 });
 
 // Delete member with confirmation
@@ -178,11 +199,38 @@ async function deleteMemberConfirm(id) {
     const member = await getMember(id);
     if (!member) return;
 
-    if (confirm(`Êtes-vous sûr de vouloir supprimer ${member.prenoms} ${member.nom} ?`)) {
-        await deleteMember(id);
-        await loadMembers();
-        await updateStats();
-        alert('Membre supprimé avec succès !');
+    const result = await Swal.fire({
+        title: 'Confirmer la suppression',
+        html: `Êtes-vous sûr de vouloir supprimer <strong>${member.prenoms} ${member.nom}</strong> ?<br><small>Cette action est irréversible.</small>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await deleteMember(id);
+            await loadMembers();
+            await updateStats();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Supprimé !',
+                text: 'Le membre a été supprimé avec succès.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: 'Une erreur est survenue lors de la suppression',
+                confirmButtonText: 'OK'
+            });
+        }
     }
 }
 
@@ -196,13 +244,35 @@ async function importJSON(event) {
     const file = event.target.files[0];
     if (!file) return;
 
+    Swal.fire({
+        title: 'Importation en cours...',
+        html: 'Veuillez patienter pendant l\'importation des données',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     try {
         await importFromJSON(file);
         await loadMembers();
         await updateStats();
-        alert('Données importées avec succès !');
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Importation réussie !',
+            text: 'Les données ont été importées avec succès.',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#10b981'
+        });
     } catch (error) {
-        alert('Erreur lors de l\'importation : ' + error.message);
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur d\'importation',
+            text: error.message,
+            confirmButtonText: 'OK'
+        });
     }
 }
 
@@ -210,6 +280,17 @@ async function importJSON(event) {
 async function generateSingleBadgePDF(id) {
     const member = await getMember(id);
     if (!member) return;
+
+    // Show loading alert
+    Swal.fire({
+        title: 'Génération en cours...',
+        html: 'Veuillez patienter pendant la génération du badge PDF',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     try {
         // Update template with member data
@@ -285,9 +366,23 @@ async function generateSingleBadgePDF(id) {
         doc.addImage(imgData, 'PNG', 0, 0, 54, 85.6);
         doc.save(`badge_${member.nom}_${member.prenoms}.pdf`);
 
+        // Show success message
+        Swal.fire({
+            icon: 'success',
+            title: 'Badge généré !',
+            text: `Le badge de ${member.prenoms} ${member.nom} a été téléchargé avec succès.`,
+            timer: 2000,
+            showConfirmButton: false
+        });
+
     } catch (error) {
         console.error('Erreur lors de la génération du PDF:', error);
-        alert('Erreur lors de la génération du PDF');
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Une erreur est survenue lors de la génération du PDF',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
@@ -296,13 +391,48 @@ async function generateAllBadgesPDF() {
     const members = await getAllMembers();
 
     if (members.length === 0) {
-        alert('Aucun membre à exporter');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Aucun membre',
+            text: 'Aucun membre à exporter',
+            confirmButtonText: 'OK'
+        });
         return;
     }
 
-    if (!confirm(`Générer un PDF avec ${members.length} badge(s) ?`)) {
+    // Show confirmation dialog
+    const result = await Swal.fire({
+        title: 'Générer tous les badges ?',
+        html: `Vous allez générer <strong>${members.length} badge(s)</strong> en PDF.<br>Cette opération peut prendre quelques instants.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, générer',
+        cancelButtonText: 'Annuler',
+        confirmButtonColor: '#2563eb',
+        cancelButtonColor: '#6b7280'
+    });
+
+    if (!result.isConfirmed) {
         return;
     }
+
+    // Show progress dialog
+    Swal.fire({
+        title: 'Génération en cours...',
+        html: `
+            <div style="margin: 20px 0;">
+                <div style="margin-bottom: 10px;">Badge <span id="currentBadge">1</span> sur ${members.length}</div>
+                <div style="background: #e5e7eb; border-radius: 10px; overflow: hidden; height: 30px;">
+                    <div id="progressBar" style="background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%); height: 100%; width: 0%; transition: width 0.3s; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">
+                        <span id="progressText">0%</span>
+                    </div>
+                </div>
+            </div>
+        `,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false
+    });
 
     try {
         const { jsPDF } = window.jspdf;
@@ -314,6 +444,12 @@ async function generateAllBadgesPDF() {
 
         for (let i = 0; i < members.length; i++) {
             const member = members[i];
+
+            // Update progress
+            const progress = Math.round(((i + 1) / members.length) * 100);
+            document.getElementById('currentBadge').textContent = i + 1;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = progress + '%';
 
             // Update template
             document.getElementById('templatePhoto').src = member.photo;
@@ -391,10 +527,22 @@ async function generateAllBadgesPDF() {
         const date = new Date().toISOString().split('T')[0];
         doc.save(`tous_les_badges_${date}.pdf`);
 
-        alert('PDF généré avec succès !');
+        // Show success message
+        Swal.fire({
+            icon: 'success',
+            title: 'Badges générés !',
+            html: `<strong>${members.length} badge(s)</strong> ont été générés avec succès.<br>Le fichier PDF a été téléchargé.`,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#10b981'
+        });
 
     } catch (error) {
         console.error('Erreur lors de la génération du PDF:', error);
-        alert('Erreur lors de la génération du PDF');
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Une erreur est survenue lors de la génération du PDF',
+            confirmButtonText: 'OK'
+        });
     }
 }
