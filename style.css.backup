@@ -1,0 +1,496 @@
+/* Global Styles */
+:root {
+    --primary-color: #2563eb;
+    --bg-color: #f3f4f6;
+    --text-color: #1f2937;
+    --border-color: #e5e7eb;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-container {
+    display: flex;
+    width: 90%;
+    max-width: 1200px;
+    height: 85vh;
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+}
+
+/* Panels */
+.panel {
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.form-panel {
+    flex: 1;
+    border-right: 1px solid var(--border-color);
+    background-color: #fff;
+}
+
+.preview-panel {
+    flex: 1.5;
+    background-color: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.preview-note {
+    margin-top: 1.5rem;
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+/* Form Styles */
+header {
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+input[type="text"],
+input[type="color"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+input[type="color"] {
+    height: 45px;
+    cursor: pointer;
+    padding: 2px;
+}
+
+/* File Upload */
+.file-upload-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+}
+
+.file-upload-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-custom {
+    display: block;
+    border: 1px dashed var(--border-color);
+    padding: 0.75rem;
+    border-radius: 8px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.9rem;
+    background: #f9fafb;
+    transition: all 0.2s;
+}
+
+.file-upload-wrapper:hover .file-custom {
+    background: #eff6ff;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Buttons */
+.actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    color: #374151;
+}
+
+.btn-secondary:hover {
+    background-color: #f3f4f6;
+}
+
+/* Badge Design (CR80 Vertical: 54mm x 85.6mm) */
+.badge-card.vertical {
+    width: 324px;
+    height: 513px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #e5e7eb;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+}
+
+.badge-header {
+    height: 80px;
+    background: #1e293b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    color: white;
+    position: relative;
+    z-index: 1;
+}
+
+.badge-header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #1e293b;
+    clip-path: ellipse(80% 100% at 50% 0%);
+    z-index: -1;
+}
+
+.header-text h3 {
+    font-size: 1rem;
+    font-weight: 900;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.header-text h4 {
+    font-size: 0.75rem;
+    font-weight: 500;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-title-strip {
+    background: transparent;
+    color: #1e293b;
+    padding: 8px 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+    margin-top: 10px;
+}
+
+.badge-body {
+    flex: 1;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    background: white;
+}
+
+.badge-body::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -20px;
+    width: 200px;
+    height: 200px;
+    background: #ff6b35;
+    border-radius: 50%;
+    opacity: 0.15;
+    z-index: 0;
+}
+
+.photo-frame {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 5px solid #ff6b35;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    margin-bottom: 1rem;
+    background: #f3f4f6;
+    position: relative;
+    z-index: 2;
+    margin-top: -50px;
+}
+
+.photo-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.info-grid {
+    width: 100%;
+    text-align: center;
+    font-size: 0.85rem;
+    background: white;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.info-grid h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #ff6b35;
+    margin-bottom: 0.25rem;
+    text-transform: capitalize;
+}
+
+.info-grid .job-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    padding: 0 1rem;
+    font-size: 0.7rem;
+}
+
+.info-row .label {
+    font-weight: 600;
+    color: #64748b;
+    text-align: left;
+}
+
+.info-row .value {
+    font-weight: 700;
+    color: #1e293b;
+    text-align: right;
+}
+
+.badge-footer {
+    height: 60px;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.badge-footer::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: 0;
+    right: 0;
+    height: 90px;
+    background: #ff6b35;
+    clip-path: ellipse(80% 100% at 50% 100%);
+}
+
+.slogan {
+    position: relative;
+    z-index: 1;
+    font-size: 0.65rem;
+    font-style: italic;
+    font-weight: 600;
+    line-height: 1.3;
+    color: white;
+    padding-top: 1.5rem;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1024px) {
+    .app-container {
+        width: 95%;
+        height: 90vh;
+    }
+
+    .badge-card.vertical {
+        width: 270px;
+        height: 427px;
+    }
+
+    .photo-frame {
+        width: 90px;
+        height: 90px;
+        border: 4px solid #ff6b35;
+    }
+
+    label {
+        font-size: 0.8rem;
+    }
+
+    input[type="text"] {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .badge-card.vertical {
+        width: 280px;
+        height: 443px;
+    }
+
+    .badge-header {
+        height: 70px;
+    }
+
+    .header-text h3 {
+        font-size: 0.85rem;
+    }
+
+    .header-text h4 {
+        font-size: 0.65rem;
+    }
+
+    .badge-title-strip {
+        font-size: 0.6rem;
+        padding: 6px 0;
+    }
+
+    .photo-frame {
+        width: 85px;
+        height: 85px;
+        margin-top: -40px;
+    }
+
+    .info-grid h2 {
+        font-size: 1rem;
+    }
+
+    .info-grid .job-title {
+        font-size: 0.8rem;
+    }
+
+    .info-row {
+        font-size: 0.6rem;
+        padding: 0 0.75rem;
+    }
+
+    .slogan {
+        font-size: 0.6rem;
+        padding-top: 1.25rem;
+    }
+
+    .preview-note {
+        font-size: 0.75rem;
+    }
+}
+
+/* PRINT STYLES */
+@media print {
+    @page {
+        margin: 0;
+        size: auto;
+    }
+
+    body {
+        background: white;
+        height: auto;
+        display: block;
+    }
+
+    .app-container,
+    .form-panel,
+    .preview-note,
+    .actions {
+        display: none !important;
+    }
+
+    .preview-panel {
+        display: block;
+        background: white;
+        padding: 0;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .badge-card.vertical {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        transform: scale(1);
+    }
+}

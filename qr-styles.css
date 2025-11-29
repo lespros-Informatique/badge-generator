@@ -1,0 +1,67 @@
+/* QR Code et Signature Styles */
+.qr-signature-container {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 1rem;
+    gap: 1.5rem;
+}
+
+.qr-code-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.qr-code-container canvas,
+.qr-code-container img {
+    width: 70px !important;
+    height: 70px !important;
+}
+
+.signature-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    border-bottom: 1px solid #64748b;
+    padding-bottom: 2px;
+    min-width: 100px;
+    height: 70px;
+    position: relative;
+    z-index: 2;
+    top: -20px;
+ 
+}
+
+.signature-label {
+    color: #64748b;
+    margin-top: auto;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Spinner Animation */
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

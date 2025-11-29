@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test JSONBin.io</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .result {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔧 Test de Connexion JSONBin.io</h1>
+
+    <div>
+        <button onclick="testConfig()">1. Tester la Configuration</button>
+        <button onclick="testFetch()">2. Récupérer les Données</button>
+        <button onclick="testSave()">3. Tester la Sauvegarde</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script src="config.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(message, isError = false) {
+            const div = document.createElement('div');
+            div.className = 'result ' + (isError ? 'error' : 'success');
+            div.textContent = message;
+            resultsDiv.appendChild(div);
+        }
+
+        function testConfig() {
+            resultsDiv.innerHTML = '';
+            addResult('API Key: ' + JSONBIN_CONFIG.API_KEY.substring(0, 20) + '...');
+            addResult('Bin ID: ' + JSONBIN_CONFIG.BIN_ID);
+            addResult('Base URL: ' + JSONBIN_CONFIG.BASE_URL);
+        }
+
+        async function testFetch() {
+            resultsDiv.innerHTML = '';
+            addResult('🔄 Récupération des données...');
+
+            try {
+                const url = `${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}/latest`;
+                addResult('URL: ' + url);
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Master-Key': JSONBIN_CONFIG.API_KEY,
+                        'X-Bin-Meta': 'false'
+                    }
+                });
+
+                addResult('Status: ' + response.status + ' ' + response.statusText);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    addResult('❌ Erreur: ' + errorText, true);
+                    return;
+                }
+
+                const data = await response.json();
+                addResult('✅ Données récupérées avec succès!');
+                addResult('Nombre de membres: ' + (data.members ? data.members.length : 0));
+                addResult('Données: ' + JSON.stringify(data, null, 2));
+
+            } catch (error) {
+                addResult('❌ Erreur: ' + error.message, true);
+                console.error(error);
+            }
+        }
+
+        async function testSave() {
+            resultsDiv.innerHTML = '';
+            addResult('🔄 Test de sauvegarde...');
+
+            try {
+                const testData = {
+                    members: [
+                        {
+                            id: 'test_' + Date.now(),
+                            nom: 'TEST',
+                            prenoms: 'Test',
+                            poste: 'Test',
+                            contact: '0000000000',
+                            dateBapteme: '01/01/2020',
+                            dateAdhesion: '01/01/2020',
+                            photo: 'data:image/png;base64,test',
+                            dateInscription: new Date().toISOString()
+                        }
+                    ],
+                    lastUpdated: new Date().toISOString()
+                };
+
+                const response = await fetch(`${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.API_KEY
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                addResult('Status: ' + response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    addResult('❌ Erreur: ' + errorText, true);
+                    return;
+                }
+
+                addResult('✅ Sauvegarde réussie!');
+                addResult('⚠️ Cliquez sur "Récupérer les Données" pour vérifier');
+
+            } catch (error) {
+                addResult('❌ Erreur: ' + error.message, true);
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+
+</html>

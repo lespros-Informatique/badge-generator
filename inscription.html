@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Jeunesse de la Race Bénie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="qr-styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Form Panel -->
+        <div class="panel form-panel ">
+            <header>
+                <h1>📝 Inscription Membre</h1>
+                <p>Remplissez le formulaire pour obtenir votre carte de membre.</p>
+            </header>
+
+            <form id="inscriptionForm">
+                <div class="form-group">
+                    <label for="nom">Nom *</label>
+                    <input type="text" id="nom" placeholder="Ex: KOUASSI" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenoms">Prénoms *</label>
+                    <input type="text" id="prenoms" placeholder="Ex: Jean Michel" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="poste">Poste *</label>
+                    <input type="text" id="poste" placeholder="Ex: Président" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact">Contact *</label>
+                    <input type="text" id="contact" placeholder="Ex: 01 02 03 04 05" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateBapteme">Date de baptême *</label>
+                    <input type="text" id="dateBapteme" placeholder="Ex: 12/05/2010" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateAdhesion">Date d'adhésion *</label>
+                    <input type="text" id="dateAdhesion" placeholder="Ex: 01/01/2023" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="photoUpload">Photo de profil *</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="photoUpload" accept="image/*" required>
+                        <span class="file-custom">Choisir une photo...</span>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                            <path
+                                d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" />
+                        </svg>
+                        S'inscrire
+                    </button>
+                </div>
+            </form>
+
+            <div id="successMessage"
+                style="display: none; margin-top: 1rem; padding: 1rem; background: #d1fae5; border-radius: 8px; color: #065f46;">
+                <strong>✅ Inscription réussie !</strong>
+                <p style="margin-top: 0.5rem; font-size: 0.9rem;">Votre inscription a été enregistrée avec succès.</p>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="panel preview-panel">
+            <div class="preview-container">
+                <div id="badge" class="badge-card vertical">
+                    <div class="badge-header">
+                        <div class="header-text">
+                            <h3>JEUNESSE DE LA RACE BÉNIE</h3>
+                            <h4>BOUAKÉ 2 ZONE</h4>
+                        </div>
+                    </div>
+
+                    <div class="badge-title-strip">
+                        <span>CARTE MEMBRE</span>
+                    </div>
+
+                    <div class="badge-body">
+                        <div class="photo-frame">
+                            <img id="previewPhoto" src="https://via.placeholder.com/150" alt="">
+                        </div>
+
+                        <div class="info-grid">
+                            <h2><span id="previewPrenoms">Prénoms</span> <span id="previewNom">NOM</span></h2>
+                            <p class="job-title" id="previewPoste">Poste</p>
+
+                            <div class="info-row">
+                                <span class="label">Date Baptême:</span>
+                                <span id="previewBapteme" class="value">--/--/----</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Contact:</span>
+                                <span id="previewContact" class="value">-- -- -- -- --</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Date Adhésion:</span>
+                                <span id="previewAdhesion" class="value">--/--/----</span>
+                            </div>
+                        </div>
+
+                        <!-- QR Code et Signature -->
+                        <div class="qr-signature-container">
+                            <div class="qr-code-container">
+                                <div id="previewQRCode"></div>
+                            </div>
+                            <div class="signature-container">
+                                <h2 class="signature-label">Signature Président</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="badge-footer">
+                        <p class="slogan">"Toujours fort et dynamique pour la cause de Jésus"</p>
+                    </div>
+                </div>
+            </div>
+            <p class="preview-note">Aperçu en temps réel</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="storage.js"></script>
+    <script src="inscription.js"></script>
+</body>
+
+</html>
