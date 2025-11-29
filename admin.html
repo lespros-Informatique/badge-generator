@@ -255,28 +255,64 @@
         }
 
         @media (max-width: 768px) {
+
             /* sélecteur plus spécifique pour écraser d'autres règles */
-  body .container .admin-header,
-  .admin-header {
-    padding: 1.25rem;        /* moins d'espace */
-    margin: -1rem -0.5rem 1rem -0.5rem; /* si tu utilises des marges négatives */
-    border-radius: 6px;
-  }
+            body .container .admin-header,
+            .admin-header {
+                padding: 1.25rem;
+                /* moins d'espace */
+                margin: -1rem -0.5rem 1rem -0.5rem;
+                /* si tu utilises des marges négatives */
+                border-radius: 6px;
+            }
 
-  /* texte plus petit */
-  body .container .admin-header h1,
-  .admin-header h1 {
-    font-size: 1.35rem;
-    line-height: 1.2;
-    margin-bottom: 0.25rem;
-  }
+            /* texte plus petit */
+            body .container .admin-header h1,
+            .admin-header h1 {
+                font-size: 1.35rem;
+                line-height: 1.2;
+                margin-bottom: 0.25rem;
+            }
 
-  body .container .admin-header p,
-  .admin-header p {
-    font-size: 0.95rem;
-    margin-bottom: 0;
-    opacity: 0.95;
-  }
+            body .container .admin-header p,
+            .admin-header p {
+                font-size: 0.95rem;
+                margin-bottom: 0;
+                opacity: 0.95;
+            }
+
+            /* Fix pour le conteneur principal */
+            body {
+                overflow-x: hidden;
+            }
+
+            div[style*="max-width: 1400px"] {
+                padding: 1rem !important;
+                overflow-x: hidden;
+            }
+
+            .panel {
+                overflow-x: hidden;
+            }
+
+            /* Fix pour DataTable wrapper */
+            .dataTables_wrapper {
+                max-width: 100%;
+                overflow-x: auto;
+            }
+
+            .dataTables_scroll {
+                max-width: 100%;
+            }
+
+            .dataTables_scrollBody {
+                max-width: 100%;
+            }
+
+            #membersTableContainer {
+                overflow-x: auto;
+                max-width: 100%;
+            }
 
             .stats {
                 grid-template-columns: 1fr;
@@ -369,6 +405,7 @@
 <body style="background: #f3f4f6; height: auto; min-height: 100vh;">
     <div style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
         <div class="panel" style="background: white;">
+
             <div class="admin-header">
                 <h1>🎛️ Administration - Gestion des Membres</h1>
                 <p>Gérez les inscriptions, modifiez les informations et générez les badges PDF</p>

@@ -218,6 +218,8 @@ async function generateSingleBadgePDF(id) {
         document.getElementById('templatePrenoms').textContent = member.prenoms;
         document.getElementById('templatePoste').textContent = member.poste;
         document.getElementById('templateContact').textContent = member.contact;
+        document.getElementById('templateBapteme').textContent = member.dateBapteme;
+        document.getElementById('templateAdhesion').textContent = member.dateAdhesion;
         // Generate QR Code
         const qrContainer = document.getElementById('templateQRCode');
         qrContainer.innerHTML = ''; // Clear previous QR

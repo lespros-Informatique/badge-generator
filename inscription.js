@@ -32,7 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
         previews.nom.textContent = inputs.nom.value || 'NOM';
         previews.prenoms.textContent = inputs.prenoms.value || 'Prénoms';
         previews.poste.textContent = inputs.poste.value || 'Poste';
-        previews.contact.textContent = inputs.contact.value || '-- -- -- -- --';
+
+        // Add +225 prefix to contact display
+        const contactValue = inputs.contact.value;
+        if (contactValue) {
+            previews.contact.textContent = '+225 ' + contactValue;
+        } else {
+            previews.contact.textContent = '-- -- -- -- --';
+        }
+
         previews.bapteme.textContent = inputs.dateBapteme.value || '--/--/----';
         previews.adhesion.textContent = inputs.dateAdhesion.value || '--/--/----';
 
@@ -72,9 +80,105 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Attach input listeners
+    // Auto-format phone number (10 digits max with spaces)
+    function formatPhoneInput(input) {
+        input.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+
+            // Limit to 10 digits
+            if (value.length > 10) {
+                value = value.substring(0, 10);
+            }
+
+            // Validate first 2 digits (must be 01, 05, or 07)
+            if (value.length >= 2) {
+                const firstTwo = value.substring(0, 2);
+                if (firstTwo !== '01' && firstTwo !== '05' && firstTwo !== '07') {
+                    // Reset to valid prefix or clear
+                    if (value.length === 2) {
+                        value = value[0]; // Keep only first digit
+                    }
+                }
+            }
+
+            // Add spaces every 2 digits for readability (01 02 03 04 05)
+            let formatted = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 2 === 0) {
+                    formatted += ' ';
+                }
+                formatted += value[i];
+            }
+
+            e.target.value = formatted;
+            updatePreview(); // Update preview after formatting
+        });
+
+        // Prevent non-numeric input
+        input.addEventListener('keypress', (e) => {
+            if (e.key && !/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete') {
+                e.preventDefault();
+            }
+        });
+
+        // Show validation message
+        input.addEventListener('blur', (e) => {
+            const value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                const firstTwo = value.substring(0, 2);
+                if (firstTwo !== '01' && firstTwo !== '05' && firstTwo !== '07') {
+                    alert('Le numéro doit commencer par 01, 05 ou 07');
+                    e.target.value = '';
+                    updatePreview();
+                }
+            }
+        });
+    }
+
+    // Auto-format date fields (JJ/MM/AAAA)
+    function formatDateInput(input) {
+        input.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+
+            // Limit to 8 digits (JJMMAAAA)
+            if (value.length > 8) {
+                value = value.substring(0, 8);
+            }
+
+            // Add slashes automatically
+            let formatted = '';
+            if (value.length >= 1) {
+                formatted = value.substring(0, 2); // JJ
+            }
+            if (value.length >= 3) {
+                formatted += '/' + value.substring(2, 4); // MM
+            }
+            if (value.length >= 5) {
+                formatted += '/' + value.substring(4, 8); // AAAA
+            }
+
+            e.target.value = formatted;
+            updatePreview(); // Update preview after formatting
+        });
+
+        // Prevent non-numeric input except backspace/delete
+        input.addEventListener('keypress', (e) => {
+            if (e.key && !/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete') {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Apply phone formatting
+    formatPhoneInput(inputs.contact);
+
+    // Apply date formatting to date fields
+    formatDateInput(inputs.dateBapteme);
+    formatDateInput(inputs.dateAdhesion);
+
+    // Attach input listeners (excluding fields with custom formatting)
     Object.keys(inputs).forEach(key => {
-        if (key !== 'photo') {
+        if (key !== 'photo' && key !== 'dateBapteme' && key !== 'dateAdhesion' && key !== 'contact') {
             inputs[key].addEventListener('input', updatePreview);
         }
     });
