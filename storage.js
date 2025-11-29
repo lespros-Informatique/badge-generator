@@ -1,7 +1,6 @@
 // Storage utility for managing members data with Supabase
-// Centralized cloud storage
+// Cloud-only storage (no localStorage cache)
 
-const STORAGE_KEY = 'badge_members_cache'; // Local cache
 
 // Initialize Supabase client
 let supabase;
@@ -24,7 +23,10 @@ function generateId() {
 
 // Fetch all members from Supabase
 async function fetchMembersFromCloud() {
-    if (!supabase) return getAllMembersLocal();
+    if (!supabase) {
+        console.warn('Supabase not configured');
+        return [];
+    }
 
     try {
         const { data, error } = await supabase
@@ -34,14 +36,10 @@ async function fetchMembersFromCloud() {
 
         if (error) throw error;
 
-        // Cache locally
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ members: data }));
-
         return data || [];
     } catch (error) {
         console.error('Erreur Supabase:', error);
-        // Fallback to local cache
-        return getAllMembersLocal();
+        return [];
     }
 }
 
@@ -54,11 +52,7 @@ async function addMember(memberData) {
     };
 
     if (!supabase) {
-        // Offline mode or config missing
-        const members = getAllMembersLocal();
-        members.push(newMember);
-        saveMembersLocal(members);
-        return newMember;
+        throw new Error('Supabase non configuré. Impossible d\'ajouter un membre.');
     }
 
     try {
@@ -69,11 +63,6 @@ async function addMember(memberData) {
 
         if (error) throw error;
 
-        // Update local cache
-        const members = getAllMembersLocal();
-        members.unshift(newMember);
-        saveMembersLocal(members);
-
         return newMember;
     } catch (error) {
         console.error('Erreur ajout Supabase:', error);
@@ -83,7 +72,9 @@ async function addMember(memberData) {
 
 // Update a member in Supabase
 async function updateMember(id, memberData) {
-    if (!supabase) return null;
+    if (!supabase) {
+        throw new Error('Supabase non configuré. Impossible de modifier un membre.');
+    }
 
     try {
         const { data, error } = await supabase
@@ -94,14 +85,6 @@ async function updateMember(id, memberData) {
 
         if (error) throw error;
 
-        // Update local cache
-        const members = getAllMembersLocal();
-        const index = members.findIndex(m => m.id === id);
-        if (index !== -1) {
-            members[index] = { ...members[index], ...memberData };
-            saveMembersLocal(members);
-        }
-
         return data[0];
     } catch (error) {
         console.error('Erreur modification Supabase:', error);
@@ -111,7 +94,9 @@ async function updateMember(id, memberData) {
 
 // Delete a member from Supabase
 async function deleteMember(id) {
-    if (!supabase) return false;
+    if (!supabase) {
+        throw new Error('Supabase non configuré. Impossible de supprimer un membre.');
+    }
 
     try {
         const { error } = await supabase
@@ -121,35 +106,11 @@ async function deleteMember(id) {
 
         if (error) throw error;
 
-        // Update local cache
-        const members = getAllMembersLocal();
-        const filtered = members.filter(m => m.id !== id);
-        saveMembersLocal(filtered);
-
         return true;
     } catch (error) {
         console.error('Erreur suppression Supabase:', error);
         throw error;
     }
-}
-
-// ============================================
-// LOCAL STORAGE FUNCTIONS (Fallback/Cache)
-// ============================================
-
-function getAllMembersLocal() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (!data) return [];
-    try {
-        const parsed = JSON.parse(data);
-        return parsed.members || [];
-    } catch (e) {
-        return [];
-    }
-}
-
-function saveMembersLocal(members) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ members }));
 }
 
 // ============================================
@@ -199,11 +160,10 @@ function importFromJSON(file) {
                             .upsert(data.members);
 
                         if (error) throw error;
+                        resolve(data.members);
+                    } else {
+                        reject(new Error('Supabase non configuré'));
                     }
-
-                    // Update local
-                    saveMembersLocal(data.members);
-                    resolve(data.members);
                 } else {
                     reject(new Error('Format de fichier invalide'));
                 }
