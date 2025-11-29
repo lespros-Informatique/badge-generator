@@ -3,6 +3,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('inscriptionForm');
     const successMessage = document.getElementById('successMessage');
 
+    // Toast notification function
+    function showToast(message, type = 'error') {
+        const container = document.getElementById('toastContainer');
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+
+        const icons = {
+            error: '❌',
+            success: '✅',
+            warning: '⚠️',
+            info: 'ℹ️'
+        };
+
+        toast.innerHTML = `
+            <span class="toast-icon">${icons[type] || icons.error}</span>
+            <span class="toast-message">${message}</span>
+        `;
+
+        container.appendChild(toast);
+
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            toast.classList.add('slide-out');
+            setTimeout(() => {
+                container.removeChild(toast);
+            }, 300);
+        }, 4000);
+    }
+
     // Form inputs
     const inputs = {
         nom: document.getElementById('nom'),
@@ -127,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (value.length >= 2) {
                 const firstTwo = value.substring(0, 2);
                 if (firstTwo !== '01' && firstTwo !== '05' && firstTwo !== '07') {
-                    alert('Le numéro doit commencer par 01, 05 ou 07');
+                    showToast('Le numéro doit commencer par 01, 05 ou 07', 'warning');
                     e.target.value = '';
                     updatePreview();
                 }
@@ -205,11 +235,75 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Validate photo
-        if (!photoData) {
-            alert('Veuillez ajouter une photo');
+        // Validate one field at a time - show only first error
+
+        // Validate nom
+        if (!inputs.nom.value.trim()) {
+            showToast('Le champ "Nom" est obligatoire', 'error');
             return;
         }
+
+        // Validate prenoms
+        if (!inputs.prenoms.value.trim()) {
+            showToast('Le champ "Prénoms" est obligatoire', 'error');
+            return;
+        }
+
+        // Validate poste
+        if (!inputs.poste.value.trim()) {
+            showToast('Le champ "Poste" est obligatoire', 'error');
+            return;
+        }
+
+        // Validate contact
+        const contactValue = inputs.contact.value.replace(/\D/g, '');
+        if (!contactValue) {
+            showToast('Le champ "Contact" est obligatoire', 'error');
+            return;
+        }
+
+        if (contactValue.length !== 10) {
+            showToast('Le numéro de téléphone doit contenir 10 chiffres', 'error');
+            return;
+        }
+
+        const firstTwo = contactValue.substring(0, 2);
+        if (firstTwo !== '01' && firstTwo !== '05' && firstTwo !== '07') {
+            showToast('Le numéro doit commencer par 01, 05 ou 07', 'error');
+            return;
+        }
+
+        // Validate date de baptême
+        const baptemeValue = inputs.dateBapteme.value;
+        if (!baptemeValue) {
+            showToast('Le champ "Date de baptême" est obligatoire', 'error');
+            return;
+        }
+
+        if (baptemeValue.length !== 10) {
+            showToast('La date de baptême doit être au format JJ/MM/AAAA', 'error');
+            return;
+        }
+
+        // Validate date d'adhésion
+        const adhesionValue = inputs.dateAdhesion.value;
+        if (!adhesionValue) {
+            showToast('Le champ "Date d\'adhésion" est obligatoire', 'error');
+            return;
+        }
+
+        if (adhesionValue.length !== 10) {
+            showToast('La date d\'adhésion doit être au format JJ/MM/AAAA', 'error');
+            return;
+        }
+
+        // Validate photo
+        if (!photoData) {
+            showToast('Veuillez ajouter une photo de profil', 'error');
+            return;
+        }
+
+        // All validations passed - proceed with submission
 
         // Get submit button
         const submitBtn = form.querySelector('button[type="submit"]');
